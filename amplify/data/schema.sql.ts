@@ -5,43 +5,42 @@ import { configure } from "@aws-amplify/data-schema/internals";
 import { secret } from "@aws-amplify/backend";
 
 export const schema = configure({
-    database: {
-        identifier: "IDQyKq92SOaouHyUeG3kfVZg",
-        engine: "postgresql",
-        connectionUri: secret("SQL_CONNECTION_STRING"),
-        vpcConfig: {
-            vpcId: "vpc-0cabb8307b7fd6bbd",
-            securityGroupIds: [
-                "sg-04d125cab6693722a"
-            ],
-            subnetAvailabilityZones: [
-                {
-                    subnetId: "subnet-0354bcf9e76b3ed50",
-                    availabilityZone: "us-west-2d"
-                },
-                {
-                    subnetId: "subnet-03bccd3893a6f7bb8",
-                    availabilityZone: "us-west-2c"
-                },
-                {
-                    subnetId: "subnet-0bd64b4bb817db989",
-                    availabilityZone: "us-west-2a"
-                },
-                {
-                    subnetId: "subnet-08241b4ab908f483b",
-                    availabilityZone: "us-west-2b"
-                }
-            ]
-        }
-    }
+  database: {
+    identifier: "IDQyKq92SOaouHyUeG3kfVZg",
+    engine: "postgresql",
+    connectionUri: secret("SQL_CONNECTION_STRING"),
+    vpcConfig: {
+      vpcId: "vpc-0cabb8307b7fd6bbd",
+      securityGroupIds: ["sg-04d125cab6693722a"],
+      subnetAvailabilityZones: [
+        {
+          subnetId: "subnet-0354bcf9e76b3ed50",
+          availabilityZone: "us-west-2d",
+        },
+        {
+          subnetId: "subnet-03bccd3893a6f7bb8",
+          availabilityZone: "us-west-2c",
+        },
+        {
+          subnetId: "subnet-0bd64b4bb817db989",
+          availabilityZone: "us-west-2a",
+        },
+        {
+          subnetId: "subnet-08241b4ab908f483b",
+          availabilityZone: "us-west-2b",
+        },
+      ],
+    },
+  },
 }).schema({
-    "person": a.model({
-        id: a.integer().required(),
-        firstname: a.string().required(),
-        lastname: a.string().required(),
-        email: a.string().required(),
-        address: a.string()
-    }).identifier([
-        "id"
-    ])
+  person: a
+    .model({
+      id: a.integer().required(),
+      firstname: a.string().required(),
+      lastname: a.string().required(),
+      email: a.string().required(),
+      address: a.string(),
+      social: a.float(),
+    })
+    .identifier(["id"]),
 });

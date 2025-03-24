@@ -1,5 +1,5 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { schema as generatedSqlSchema } from './schema.sql';
+import { schema as generatedSqlSchema } from "./schema.sql";
 
 /*== STEP 1 ===============================================================
 The section below creates a Todo database table with a "content" field. Try
@@ -8,26 +8,23 @@ specifies that any user authenticated via an API key can "create", "read",
 "update", and "delete" any "Todo" records.
 =========================================================================*/
 
-
-
-
-
 // Add a global authorization rule
-const sqlSchema = generatedSqlSchema.authorization(allow => allow.guest())
-//.addToSchema({
-//   Person:a.customType({
-//     id:a.integer(),
-//     firstName:a.string(),
-//     lastName:a.string(),
-//     email:a.string(),
-//   }),
-//   listPersons:a.query()
-//   .returns(a.ref("Person").array())
-//   .handler(a.handler.inlineSql(
-//     `SELECT id,firstname, lastname, email FROM person;`
-//   )).authorization(allow=> [allow.guest()]),
-
-// })
+const sqlSchema = generatedSqlSchema
+  .authorization((allow) => allow.authenticated())
+  .addToSchema({
+    search: a
+      .query()
+      .arguments({
+        firstname: a.string().required(),
+      })
+      .returns(a.ref("person").array())
+      .handler(
+        a.handler.inlineSql(
+          `SELECT id,firstname, lastname, email FROM person where firstname like :firstname;`
+        )
+      )
+      .authorization((allow) => [allow.guest()]),
+  });
 
 const schema = a.schema({
   Todo: a
@@ -41,7 +38,7 @@ const combinedSchema = a.combine([schema, sqlSchema]);
 export type Schema = ClientSchema<typeof combinedSchema>;
 
 export const data = defineData({
-  schema:combinedSchema,
+  schema: combinedSchema,
   authorizationModes: {
     defaultAuthorizationMode: "identityPool",
     apiKeyAuthorizationMode: {

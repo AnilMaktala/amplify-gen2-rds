@@ -1,34 +1,43 @@
 import { useEffect, useState } from "react";
 import type { Schema } from "../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import { withAuthenticator } from "@aws-amplify/ui-react";
+import "@aws-amplify/ui-react/styles.css";
 
 const client = generateClient<Schema>();
 
 function App() {
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-  const [persons, setPersons] = useState<Array<Schema["Person"]["type"]>>([]);
+  const [persons, setPersons] = useState<Array<Schema["person"]["type"]>>([]);
 
   useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
-      next: (data) => setTodos([...data.items]),
+    client.models.person.observeQuery().subscribe({
+      next: (data) => setPersons([...data.items]),
     });
   }, []);
 
-  function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
+  function createPerson() {
+    client.models.person.create({ firstname: window.prompt("Person name") });
+  }
+  function searchPerson() {
+    client.models.person
+      .search(window.prompt("Person name") || undefined)
+      .then((data) => setPersons([...data.items]));
   }
 
   return (
     <main>
-      <h1>My todos</h1>
-      <button onClick={createTodo}>+ new</button>
+      <h1>My People</h1>
+      <button onClick={createPerson}>+ new person</button>
+      <button onClick={searchPerson}>🔍 search person</button>
       <ul>
-        {todos.map((todo) => (
-          <li key={todo.id}>{todo.content}</li>
+        {persons.map((person) => (
+          <li key={person.id}>
+            {person.firstname} {person.social}
+          </li>
         ))}
       </ul>
       <div>
-        🥳 App successfully hosted. Try creating a new todo.
+        🥳 App successfully hosted. Try adding a new person.
         <br />
         <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
           Review next step of this tutorial.
@@ -38,4 +47,4 @@ function App() {
   );
 }
 
-export default App;
+export default withAuthenticator(App);
